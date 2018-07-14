@@ -6,6 +6,18 @@ if IsValid(Scoreboard) then Scoreboard:Remove() end
 scoreboard = {}
 local Debug = false
 
+local sorting = {
+	["Wlasciciel"] = 10,
+	["SuperAdmin"] = 9,
+	["Admin"] = 8,
+	["VIP"] =6,
+	["Moderator"]=7,
+	["Budowniczy"]=5,
+	["Staly Bywalec"]=4,
+	["Bywalec"]=3,
+	["Gracz"]=2,
+	["Worek treningowy"]=1,
+}
 local hostnameFont = {
 	font = "Roboto Bold",
 	size = ScreenScale(8),
@@ -433,7 +445,12 @@ function scoreboard:RefreshPlayers(id)
 			self.Teams:AddItem(pnl)
 			pnl.Team = id
 			pnl:SetTeam(id)
-			pnl:SetZPos(-id)
+			if sorting[team.GetName(id)] then
+				print(sorting[team.GetName(id)])
+			pnl:SetZPos(-sorting[team.GetName(id)])
+			else
+			--pnl:SetZPos(-id)
+			end
 			pnl:Dock(TOP)
 			pnl:DockMargin(0, 2, 0, 0)
 			self.Teams[id] = pnl

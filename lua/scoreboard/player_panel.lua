@@ -169,7 +169,7 @@ function Player:Init()
 		surface.DrawOutlinedRect(0, 0, w, h)
 	end
 
-	if LocalPlayer().AFKTime then
+	if LocalPlayer().GetAFKTime then
 		self.Info.Ping = vgui.Create("DButton", self.Info)
 		self.Info.Ping:Dock(RIGHT)
 		self.Info.Ping:SetWide(58)
@@ -211,7 +211,7 @@ function Player:Init()
 				surface.SetFont("DermaDefault")
 				local txt
 				if isAFK then
-					local AFKTime = math.max(0, CurTime() - ply:AFKTime())
+					local AFKTime = math.max(0,ply:GetAFKTime())
 					local h = math.floor(AFKTime / 60 / 60)
 					local m = math.floor(AFKTime / 60 % 60)
 					local s = math.floor(AFKTime % 60)
@@ -257,7 +257,7 @@ function Player:Init()
 		end
 	end
 
-	if LocalPlayer().GetPlaytime then
+	if LocalPlayer().GetUTimeSessionTime then
 		self.Info.Playtime = vgui.Create("DButton", self.Info)
 		self.Info.Playtime:Dock(RIGHT)
 		self.Info.Playtime:SetWide(46)
@@ -268,7 +268,7 @@ function Player:Init()
 			if not IsValid(ply) then return true end
 
 			surface.SetFont("DermaDefault")
-			local playtime = ply:GetPlaytime()
+			local playtime = ply:GetUTimeSessionTime()
 			local _h = math.floor(playtime / 60 / 60)
 			local _m = math.floor(playtime / 60 % 60)
 			local _s = math.floor(playtime % 60)
@@ -349,27 +349,22 @@ local building = {
 Player.Tags = {
 	function(ply)
 		if ply:GetCountry():Trim() ~= "" then
-			return ply:GetCountry():lower(), Player.Icons.Flags[ply:GetCountryCode():lower()], nil, 11
-		end
-	end,
-	function(ply)
-		if _G.WebMaterial and ply:GetNWBool("is_in_steamgroup") then
-			return "member", WebMaterial("redream_logo_16", "https://re-dream.org/media/redream-16.png")
+			return ply:GetCountry(), Player.Icons.Flags[ply:GetCountryCode():lower()], nil, 11
 		end
 	end,
 	function(ply)
 		if ply:IsAdmin() then
-			return "admin", Player.Icons.Shield, Color(160, 150, 0)
+			return "Admin", Player.Icons.Shield, Color(160, 150, 0)
 		end
 	end,
 	function(ply)
 		if ply:IsTyping() then
-			return "typing", Player.Icons.Typing, Color(100, 150, 255)
+			return "Pisze", Player.Icons.Typing, Color(100, 150, 255)
 		end
 	end,
 	function(ply)
 		if ply.buildmode == true then
-			return "building", Player.Icons.Wrench
+			return "Buduje", Player.Icons.Wrench
 		end
 		if ply.buildmode == false then
 			return "PVP", Player.Icons.PVP
@@ -377,17 +372,17 @@ Player.Tags = {
 	end,
 	function(ply)
 		if ply:GetMoveType() == MOVETYPE_NOCLIP and not ply:InVehicle() then
-			return "noclip", Player.Icons.NoClip, Color(0, 255, 174)
+			return "Noclip", Player.Icons.NoClip, Color(0, 255, 174)
 		end
 	end,
 	function(ply)
 		if ply:InVehicle() then
-			return "in vehicle", Player.Icons.Vehicle, Color(183, 120, 220)
+			return "W aucie", Player.Icons.Vehicle, Color(183, 120, 220)
 		end
 	end,
 	function(ply)
 		if ply:IsMuted() then
-			return "muted", Player.Icons.Muted
+			return "Wyciszony", Player.Icons.Muted
 		end
 	end,
 }
