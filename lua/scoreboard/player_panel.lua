@@ -105,53 +105,41 @@ function Player:Init()
 	function self.Info.DoDoubleClick()
 		local ply = self.Player
 		if not IsValid(ply) then return end
-		if mingeban and mingeban.GetCommand("go") then
-			LocalPlayer():ConCommand("mingeban go _" .. ply:EntIndex())
-		end
+			LocalPlayer():ConCommand("ulx goto " .. ply:Name())
 	end
-	function self.Info.DoRightClick()
+	function self.Info.DoClick()
 		local menu = DermaMenu()
 		local lply = LocalPlayer()
 		local ply = self.Player
-		if mingeban and mingeban.commands then
-			local cmds = mingeban.commands
-			if IsValid(ply) and lply ~= ply then
-				if lply:HasPermission("command.go") and mingeban.GetCommand("go") then
-					menu:AddOption("Go To", function()
-						lply:ConCommand("mingeban go _" .. ply:EntIndex())
-					end):SetIcon("icon16/bullet_go.png")
-				end
-
-				if lply:HasPermission("command.bring") and mingeban.GetCommand("bring") then
-					menu:AddOption("Bring", function()
-						lply:ConCommand("mingeban bring _" .. ply:EntIndex())
-					end):SetIcon("icon16/arrow_in.png")
-				end
-
-				menu:AddSpacer()
-
-				if lply:HasPermission("command.kick") and mingeban.GetCommand("kick") then
-					menu:AddOption("Kick", function()
-						Derma_StringRequest("Scoreboard - Kick " .. ply:Nick(), "What's your reason for kicking this player?", "",
-							function(reason)
-								if reason:Trim() == "" then
-									reason = nil
-								end
-								RunConsoleCommand("mingeban", "kick", "_" .. ply:EntIndex(), reason)
-							end
-						)
-					end):SetIcon("icon16/door_in.png")
-				end
-
-				menu:AddSpacer()
-
-				menu:AddOption("Toggle Mute", function()
-					ply:SetMuted(not ply:IsMuted())
-				end):SetIcon("icon16/sound_mute.png")
+		if !IsValid(ply) then return end
+		menu:AddOption("Goto",function()
+			lply:ConCommand("ulx goto "..ply:Name())
+		end):SetIcon("icon16/arrow_right.png")
+		menu:AddOption("Pac3 Ignore/UnIgnore",function()
+			local hmm = ply.pac_ignored or false
+			if hmm then
+					pac.IgnoreEntity(ply)
+			else
+					pac.UnIgnoreEntity(ply)
 			end
+		end):SetIcon("icon16/palette.png")
+		if lply:IsAdmin() then
+			menu:AddSpacer()
+			menu:AddOption("Bring",function()
+				lply:ConCommand("ulx bring "..ply:Name())
+			end):SetIcon("icon16/arrow_left.png")
+			menu:AddOption("Spectate",function()
+				lply:ConCommand("ulx spectate "..ply:Name())
+			end):SetIcon("icon16/briefcase.png")
 		end
+		menu:AddSpacer()
+		menu:AddOption("Wyciszenie", function()
+			ply:SetMuted(not ply:IsMuted())
+		end):SetIcon("icon16/sound_mute.png")
+
 		menu:Open()
 	end
+	self.Info.DoRightClick = self.Info.DoClick
 	function self.Info.Paint(s, w, h)
 		local ply = self.Player
 		if not IsValid(ply) and not istable(ply) then
@@ -348,6 +336,7 @@ Player.Icons.Vehicle = Material("icon16/car.png")
 Player.Icons.Muted   = Material("icon16/sound_mute.png")
 Player.Icons.Friend  = Material("icon16/user_green.png")
 Player.Icons.Self    = Material("icon16/user.png")
+Player.Icons.PVP		 = Material("icon16/exclamation.png")
 Player.Icons.Flags	 = {}
 for _, fileName in next, (file.Find("materials/flags16/*.png", "GAME")) do
 	Player.Icons.Flags[fileName:StripExtension():lower()] = Material("flags16/" .. fileName)
@@ -379,8 +368,11 @@ Player.Tags = {
 		end
 	end,
 	function(ply)
-		if IsValid(ply:GetActiveWeapon()) and building[ply:GetActiveWeapon():GetClass()] then
-			return "building", Player.Icons.Wrench, Color(255, 126, 0)
+		if ply.buildmode == true then
+			return "building", Player.Icons.Wrench
+		end
+		if ply.buildmode == false then
+			return "PVP", Player.Icons.PVP
 		end
 	end,
 	function(ply)
@@ -471,4 +463,3 @@ function Player:Paint(w, h)
 end
 
 vgui.Register(tag .. "Player", Player, "EditablePanel")
-

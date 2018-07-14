@@ -22,4 +22,3 @@ function PLAYER:Team()
 	end
 	return self:RealTeam()
 end
-

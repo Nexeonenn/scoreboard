@@ -346,7 +346,7 @@ function scoreboard:Init()
 	end
 
 	self:MakePopup()
-	self:SetMouseInputEnabled(false)
+	self:SetMouseInputEnabled(true)
 	self:SetKeyboardInputEnabled(false)
 
 	self:SetAlpha(255)
@@ -554,4 +554,3 @@ hook.Add("ScoreboardHide", tag, function()
 
 	return true
 end)
-

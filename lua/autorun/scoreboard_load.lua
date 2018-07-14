@@ -8,4 +8,3 @@ if SERVER then
 else
 	include("scoreboard/scoreboard.lua")
 end
-

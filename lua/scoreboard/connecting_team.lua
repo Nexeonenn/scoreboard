@@ -31,8 +31,8 @@ if SERVER then
 	end)
 elseif CLIENT then
 	TEAM_DISCONNECTED = -1
-	team.SetUp(TEAM_CONNECTING, "Connecting to server...", Color(97, 184, 12))
-	team.SetUp(TEAM_DISCONNECTED, "Recently disconnected", Color(63, 67, 82))
+	team.SetUp(TEAM_CONNECTING, "W trakcie dołączania...", Color(97, 184, 12))
+	team.SetUp(TEAM_DISCONNECTED, "Niedawno wyszli", Color(63, 67, 82))
 
 	player.Connecting = {}
 
@@ -71,4 +71,3 @@ elseif CLIENT then
 		return team._GetPlayers(id)
 	end
 end
-
