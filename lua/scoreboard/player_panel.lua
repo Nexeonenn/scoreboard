@@ -7,8 +7,32 @@ surface.CreateFont(tag .. "Player", {
 	antialias = true,
 })
 
+surface.CreateFont(tag .. "PlayerRate", {
+	font = "Roboto Medium",
+	size = 15,
+	antialias = true,
+})
+
 local Player = {}
 Player.Icons = {}
+--FROM https://github.com/ZionDevelopers/sui-scoreboard/blob/5704a208eb2e2c0d0e56ef3f02bd2db30dd8e411/lua/sui_scoreboard/client/player_row.lua
+Player.Ratings = {}
+Player.Ratings[ 'smile' ] 		= Material("icon16/emoticon_smile.png","smooth" )
+Player.Ratings[ 'lol' ] 		= Material("icon16/emoticon_smile.png","smooth" )
+Player.Ratings[ 'gay' ] 		= Material("gui/gmod_logo","smooth" )
+//Player.Ratings[ 'stunter' ] 	= Material("gui/inv_corner16","smooth" )
+Player.Ratings[ 'god' ] 		= Material("gui/gmod_logo","smooth" )
+//Player.Ratings[ 'curvey' ] 		= Material("gui/corner16","smooth" )
+//Player.Ratings[ 'best_landvehicle' ]	= Material("gui/faceposer_indicator","smooth" )
+//Player.Ratings[ 'best_airvehicle' ] 		= Material("gui/arrow","smooth" )
+Player.Ratings[ 'naughty' ] 	= Material("icon16/exclamation.png","smooth" )
+Player.Ratings[ 'friendly' ]	= Material("icon16/user.png","smooth" )
+Player.Ratings[ 'informative' ]	= Material("gui/info","smooth" )
+Player.Ratings[ 'love' ] 		= Material("icon16/heart.png","smooth" )
+Player.Ratings[ 'artistic' ] 	= Material("icon16/palette.png","smooth" )
+Player.Ratings[ 'gold_star' ] 	= Material("icon16/star.png","smooth" )
+Player.Ratings[ 'builder' ] 	= Material("icon16/wrench.png","smooth" )
+
 
 local avatars = {}
 local hovered
@@ -55,7 +79,10 @@ function Player:SteamID64()
 end
 
 function Player:Init()
-	self.Avatar = vgui.Create("AvatarImage", self)
+	self.Wrapper = vgui.Create("DPanel",self)
+	self.Wrapper:Dock(FILL);
+	self.Wrapper.Paint = function(s,w,h) self.PaintW(self,w,h) end
+	self.Avatar = vgui.Create("AvatarImage", self.Wrapper)
 	self.Avatar:Dock(LEFT)
 
 	self.Avatar.Click = vgui.Create("DButton", self.Avatar)
@@ -99,7 +126,7 @@ function Player:Init()
 		menu:Open()
 	end
 
-	self.Info = vgui.Create("DButton", self)
+	self.Info = vgui.Create("DButton", self.Wrapper)
 	self.Info:Dock(FILL)
 	self.Info:SetCursor("arrow")
 	function self.Info.DoDoubleClick()
@@ -107,7 +134,59 @@ function Player:Init()
 		if not IsValid(ply) then return end
 			LocalPlayer():ConCommand("ulx goto " .. ply:Name())
 	end
+
 	function self.Info.DoClick()
+		if !IsValid(self.Player) then return end
+		if IsValid(self.Rating) then 
+			self:SetTall(self:GetTall()/2)
+			self.Rating:Remove()
+			return
+		end
+		self.Rating = vgui.Create("DPanel",self)
+		local rat = self.Rating
+		rat.Paint = function(_,w,h)
+			surface.SetDrawColor(Color(255,255,255,90))
+			surface.DrawRect(0,0,w,h)
+		end
+		rat:Dock(BOTTOM)
+		for i,v in pairs(self.Ratings) do
+			local ratbut = vgui.Create("DButton",rat)
+			ratbut:SetText("")
+			ratbut:SetWide(32)
+			ratbut:Dock(RIGHT)
+			ratbut:SetCursor("hand")
+			local color = i == "gay" and Color(255,0,255) or Color(255,255,255)
+			local sizemod = (i=="gay" or i=="god") and 1.5 or 1
+			local posmod = (i=="gay" or i=="god") and 0.25 or 0.5
+			ratbut:SetTooltip(i)
+			ratbut.Paint = function(_,w,h)
+				local iw,ih = 16,16
+				if (!IsValid(self.Player)) then
+					self.Rating:Remove()
+				end
+				surface.SetDrawColor(Color(20,20,20,200))
+				surface.DrawRect(0,0,w,h)
+				surface.SetDrawColor(color or Color(255,255,255))
+				surface.SetMaterial(v)
+				surface.DrawTexturedRect(iw*posmod,0,iw*sizemod,ih*sizemod)
+				surface.SetFont(tag.."PlayerRate")
+				local tw,th = surface.GetTextSize(self.Player:GetRating(i))
+				surface.SetTextPos(w/2-tw/2,h-th)
+				surface.SetTextColor(Color(255,255,255))
+				surface.SetDrawColor(Color(255,255,255,255))
+				render.SetColorMaterial()
+				surface.DrawText(self.Player:GetRating(i))
+			end
+			ratbut.DoClick = function()
+				self.Player:AddRating(i)
+				print("ok")
+			end
+		end
+		rat:SetTall(self:GetTall())
+		self:SetTall(self:GetTall()*2)
+	end
+
+	function self.Info.DoRightClick()
 		local menu = DermaMenu()
 		local lply = LocalPlayer()
 		local ply = self.Player
@@ -139,7 +218,7 @@ function Player:Init()
 
 		menu:Open()
 	end
-	self.Info.DoRightClick = self.Info.DoClick
+
 	function self.Info.Paint(s, w, h)
 		local ply = self.Player
 		if not IsValid(ply) and not istable(ply) then
@@ -386,7 +465,7 @@ Player.Tags = {
 		end
 	end,
 }
-function Player:Paint(w, h)
+function Player:PaintW(w, h)
 	local lply = LocalPlayer()
 	local ply = self.Player
 	local hovered = self.Info:IsHovered() or self.Info:IsChildHovered()
