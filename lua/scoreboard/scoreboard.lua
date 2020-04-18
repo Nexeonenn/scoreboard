@@ -435,7 +435,11 @@ local function AddPlayer(pnl, userid, ply)
 	end
 	_pnl:Dock(TOP)
 	_pnl:DockMargin(8, 0, 8, 0)
-	_pnl:SetTall(36)
+	if IsValid(_pnl.Rating) then
+		_pnl:SetTall(36*2)
+	else
+		_pnl:SetTall(36)
+	end
 end
 function scoreboard:RefreshPlayers(id)
 	if id then

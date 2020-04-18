@@ -179,7 +179,6 @@ function Player:Init()
 			end
 			ratbut.DoClick = function()
 				self.Player:AddRating(i)
-				print("ok")
 			end
 		end
 		rat:SetTall(self:GetTall())
