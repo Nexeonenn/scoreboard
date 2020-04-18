@@ -446,7 +446,7 @@ function scoreboard:RefreshPlayers(id)
 			pnl.Team = id
 			pnl:SetTeam(id)
 			if sorting[team.GetName(id)] then
-				print(sorting[team.GetName(id)])
+				--print(sorting[team.GetName(id)])
 			pnl:SetZPos(-sorting[team.GetName(id)])
 			else
 			--pnl:SetZPos(-id)
