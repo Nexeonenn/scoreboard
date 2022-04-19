@@ -145,7 +145,7 @@ function Player:Init()
 		self.Rating = vgui.Create("DPanel",self)
 		local rat = self.Rating
 		rat.Paint = function(_,w,h)
-			surface.SetDrawColor(Color(255,255,255,90))
+			surface.SetDrawColor(Color(20,20,20,200))
 			surface.DrawRect(0,0,w,h)
 		end
 		rat:Dock(BOTTOM)
@@ -183,6 +183,18 @@ function Player:Init()
 		end
 		rat:SetTall(self:GetTall())
 		self:SetTall(self:GetTall()*2)
+		local NumSlider = vgui.Create( "DNumSlider", rat )
+			NumSlider:SetWide( 140 )
+			NumSlider:Dock(LEFT)
+			NumSlider:DockMargin(10,0,0,0)
+			NumSlider:SetText( "Voice Vol." )
+			NumSlider:SetMin( 0 ) -- Minimum number of the slider
+			NumSlider:SetMax( 100 ) -- Maximum number of the slider
+			NumSlider:SetDecimals( 0 ) -- Sets a decimal. Zero means it's a whole number
+			NumSlider:SetValue(ply:GetVoiceVolumeScale()*100)
+			NumSlider.OnValueChanged  = function(s,val)
+				ply:SetVoiceVolumeScale(val/100)
+		end
 	end
 
 	function self.Info.DoRightClick()
@@ -441,10 +453,13 @@ Player.Tags = {
 		end
 	end,
 	function(ply)
-		if ply.buildmode == true then
+		if GetGlobalBool("wojenna",false) then
+			return "PVP", Player.Icons.PVP
+		end
+		if ply:GetBuildMode() == true then
 			return "Buduje", Player.Icons.Wrench
 		end
-		if ply.buildmode == false then
+		if ply:GetBuildMode() == false then
 			return "PVP", Player.Icons.PVP
 		end
 	end,

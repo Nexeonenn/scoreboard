@@ -1,4 +1,3 @@
-
 if SERVER then
 	AddCSLuaFile("scoreboard/scoreboard.lua")
 	AddCSLuaFile("scoreboard/team_panel.lua")
