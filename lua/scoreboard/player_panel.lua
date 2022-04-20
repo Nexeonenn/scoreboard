@@ -427,6 +427,7 @@ Player.Icons.Muted   = Material("icon16/sound_mute.png")
 Player.Icons.Friend  = Material("icon16/user_green.png")
 Player.Icons.Self    = Material("icon16/user.png")
 Player.Icons.PVP		 = Material("icon16/exclamation.png")
+Player.Icons.Coin		 = Material("icon16/coins.png")
 Player.Icons.Flags	 = {}
 for _, fileName in next, (file.Find("materials/flags16/*.png", "GAME")) do
 	Player.Icons.Flags[fileName:StripExtension():lower()] = Material("flags16/" .. fileName)
@@ -437,6 +438,9 @@ local building = {
 	gmod_tool = true,
 }
 Player.Tags = {
+	function(ply)
+			return ply:GetMoney().."$", Player.Icons.Coin
+	end,
 	function(ply)
 		if ply:GetCountry():Trim() ~= "" then
 			return ply:GetCountry(), Player.Icons.Flags[ply:GetCountryCode():lower()], nil, 11
