@@ -5,7 +5,9 @@ end
 
 function meta:GetRating(name)
     local ratings = self:GetNWString("ratings",util.TableToJSON({}))
+    print(self,ratings)
     ratings = util.JSONToTable(ratings)
+    ratings = ratings or {}
     return ratings[name] or 0
 end
 
@@ -19,7 +21,7 @@ if SERVER then
     end
     hook.Add("PlayerInitialSpawn","RatingsLoad",function(ply)
         ply:SetNWString("ratings",ply:GetPData("ratings",util.TableToJSON({})))
-        print("[Rank]",ply)
+        --print("[Rank]",ply)
     end)
 end
 
