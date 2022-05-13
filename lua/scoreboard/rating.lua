@@ -1,28 +1,55 @@
 local meta = FindMetaTable("Player")
+local plyRatings = {}
+
 if SERVER then
 util.AddNetworkString("ScoreboardRatingAdd")
+util.AddNetworkString("ScoreboardRatingSync")
 end
 
+
+if SERVER then
+    function syncRatings(ply)
+        local data = util.Compress(ply:GetPData("ratings",util.TableToJSON({})))
+        local len = string.len(data)
+        net.Start("ScoreboardRatingSync")
+        net.WriteEntity(ply)
+        net.WriteInt(len,32)
+        net.WriteData(data,len)
+        net.Broadcast()
+    end
+else
+    net.Receive("ScoreboardRatingSync",function(_,_)
+        local ply = net.ReadEntity()
+        local len = net.ReadInt(32)
+        local data = util.Decompress(net.ReadData(len))
+        local datatable = util.JSONToTable(data)
+        plyRatings[ply] = datatable
+    end)
+end
+
+
 function meta:GetRating(name)
-    local ratings = self:GetNWString("ratings",util.TableToJSON({}))
-    print(self,ratings)
-    ratings = util.JSONToTable(ratings)
-    ratings = ratings or {}
-    return ratings[name] or 0
+    plyRatings[self] = plyRatings[self] or {}
+    if SERVER then
+        plyRatings[self] = self:GetPData("ratings",util.TableToJSON({}))
+    end
+    return plyRatings[self][name] or 0
 end
 
 if SERVER then
+    timer.Simple(0.1,function()
+        for i,v in ipairs(player.GetAll()) do
+            syncRatings(v)
+        end
+    end)
     function meta:SetRating(name,much)
-        local ratings = self:GetNWString("ratings",util.TableToJSON({}))
+        local ratings = self:GetPData("ratings",util.TableToJSON({}))
         ratings = util.JSONToTable(ratings)
         ratings[name] = much
-        self:SetNWString("ratings",util.TableToJSON(ratings))
         self:SetPData("ratings",util.TableToJSON(ratings))
+        syncRatings(self)
     end
-    hook.Add("PlayerInitialSpawn","RatingsLoad",function(ply)
-        ply:SetNWString("ratings",ply:GetPData("ratings",util.TableToJSON({})))
-        --print("[Rank]",ply)
-    end)
+    hook.Add("PlayerInitialSpawn","RatingsLoad",syncRatings)
 end
 
 function meta:AddRating(name,much)

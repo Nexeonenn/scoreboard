@@ -135,7 +135,7 @@ function Player:Init()
 			LocalPlayer():ConCommand("ulx goto " .. ply:Name())
 	end
 
-	function self.Info.DoClick()
+	--[[function self.Info.DoClick()
 		if !IsValid(self.Player) then return end
 		if IsValid(self.Rating) then 
 			self:SetTall(self:GetTall()/2)
@@ -195,7 +195,7 @@ function Player:Init()
 			NumSlider.OnValueChanged  = function(s,val)
 				ply:SetVoiceVolumeScale(val/100)
 		end
-	end
+	end]]--
 
 	function self.Info.DoRightClick()
 		local menu = DermaMenu()
