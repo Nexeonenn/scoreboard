@@ -460,10 +460,9 @@ Player.Tags = {
 		if GetGlobalBool("wojenna",false) then
 			return "PVP", Player.Icons.PVP
 		end
-		if ply:GetBuildMode() == true then
+		if ply:GetBuildMode() then
 			return "Buduje", Player.Icons.Wrench
-		end
-		if ply:GetBuildMode() == false then
+		else
 			return "PVP", Player.Icons.PVP
 		end
 	end,
