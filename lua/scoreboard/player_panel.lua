@@ -439,10 +439,12 @@ local building = {
 }
 Player.Tags = {
 	function(ply)
-			return ply:GetMoney().."$", Player.Icons.Coin
+			if ply.GetMoney then
+				return ply:GetMoney().."$", Player.Icons.Coin
+			end
 	end,
 	function(ply)
-		if ply:GetCountry():Trim() ~= "" then
+		if ply.GetCountry and ply:GetCountry():Trim() ~= "" then
 			return ply:GetCountry(), Player.Icons.Flags[ply:GetCountryCode():lower()], nil, 11
 		end
 	end,
@@ -457,13 +459,15 @@ Player.Tags = {
 		end
 	end,
 	function(ply)
-		if GetGlobalBool("wojenna",false) then
-			return "PVP", Player.Icons.PVP
-		end
-		if ply:GetBuildMode() then
-			return "Buduje", Player.Icons.Wrench
-		else
-			return "PVP", Player.Icons.PVP
+		if ply.GetBuildMode then
+			if GetGlobalBool("wojenna",false) then
+				return "PVP", Player.Icons.PVP
+			end
+			if ply:GetBuildMode() then
+				return "Buduje", Player.Icons.Wrench
+			else
+				return "PVP", Player.Icons.PVP
+			end
 		end
 	end,
 	function(ply)
